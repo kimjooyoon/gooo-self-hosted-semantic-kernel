@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - main
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -14,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - name: Check out the pull request
+      - name: Check out the source revision
         uses: actions/checkout@v4
 
       - name: Set up Go 1.27
@@ -70,7 +71,7 @@ jobs:
     name: actionlint
     runs-on: ubuntu-latest
     steps:
-      - name: Check out the pull request
+      - name: Check out the source revision
         uses: actions/checkout@v4
       - name: Lint workflows
         run: docker run --rm -v "$GITHUB_WORKSPACE:/repo" -w /repo rhysd/actionlint:latest -color

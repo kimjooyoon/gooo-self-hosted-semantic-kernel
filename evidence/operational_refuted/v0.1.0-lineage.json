@@ -1,0 +1,32 @@
+{
+  "schema": "gooo.operational-refutation/v1",
+  "status": "OPERATIONAL_REFUTED",
+  "release": {
+    "id": 381010179,
+    "tag": "v0.1.0",
+    "immutable": false,
+    "url": "https://github.com/kimjooyoon/gooo-self-hosted-semantic-kernel/releases/tag/v0.1.0"
+  },
+  "tag": {
+    "object": "b3bbf1808e26f3c912ac7d991ff6338c4e55fc94",
+    "target_commit": "c3e483b1b47b340fb5bdf86304632a483c2fb0df"
+  },
+  "asset": {
+    "id": 540713038,
+    "name": "gooo-conformance-v0.1.0.tar.gz",
+    "digest": "sha256:538c9fd3effe92387553025a65d2691996023c48027136e665c7947baa410cce"
+  },
+  "source": {
+    "actions_run_id": 33597238722,
+    "head_sha": "3a04de58a2e8620ae454adf5853edbd542dd94b7",
+    "artifact_id": 9833820662,
+    "artifact_digest": "sha256:3a07e3744cb64195686addfe0f2ed7d3064b1db0512e89535fa57bb8d14d0cca",
+    "merge_commit_claimed_by_pr_event": "48f8df837604758d1f6fbb749e048f1430dc6e2c",
+    "main_merge_commit": "c3e483b1b47b340fb5bdf86304632a483c2fb0df",
+    "main_evidence": false
+  },
+  "reason": "The release was mutable and its evidence asset came from a pull_request Actions run with a synthetic PR head, not from the merged main commit.",
+  "preserved": true,
+  "next_operation": "Produce authoritative evidence on a merged main revision and advance to v0.1.1.",
+  "blocked_by": "release-lineage-integrity"
+}

@@ -72,9 +72,13 @@ jq -s '[.[] | {case_id, expected_status, verdict, matched, byte_equal, reference
 
 pr_number="0"
 merge_commit=""
+authority="github_actions"
 if [[ -n "${GITHUB_EVENT_PATH:-}" && -f "$GITHUB_EVENT_PATH" ]]; then
 	pr_number="$(jq -r '.number // .pull_request.number // 0' "$GITHUB_EVENT_PATH")"
 	merge_commit="$(jq -r '.pull_request.merge_commit_sha // ""' "$GITHUB_EVENT_PATH")"
+fi
+if [[ "${GITHUB_EVENT_NAME:-}" == "pull_request" ]]; then
+	authority="pull_request_actions"
 fi
 jq -n \
 	--arg repository "${GITHUB_REPOSITORY:-local/unknown}" \
@@ -86,11 +90,13 @@ jq -n \
 	--arg run_attempt "${GITHUB_RUN_ATTEMPT:-unknown}" \
 	--arg pr_number "$pr_number" \
 	--arg merge_commit "$merge_commit" \
+	--arg authority "$authority" \
+	--arg event "${GITHUB_EVENT_NAME:-local}" \
 	--slurpfile validation "$evidence_dir/validation.json" \
 	--slurpfile summary "$evidence_dir/summary.json" \
 	--slurpfile vectors "$evidence_dir/vectors.json" \
 	--slurpfile counterexample "$evidence_dir/counterexample.json" \
 	--slurpfile inventory "$evidence_dir/inventory.json" \
-	'{schema:"gooo.conformance/v1", authority:"pull_request_actions", status:"CLOSED", repository:$repository, commit:$commit, ref:$ref, pull_request:{number:$pr_number, merge_commit:$merge_commit}, run:{id:$run_id, attempt:$run_attempt, workflow:$workflow, job:$job}, artifact:{name:"gooo-conformance", path:"evidence/"}, validation:$validation[0], corpus_summary:$summary[0], vectors:$vectors[0], counterexample:$counterexample[0], inventory:$inventory[0], claims:{bounded_self_hosting:{status:"CLOSED", scope:"schema to generated evaluator to frozen oracle over fixed 12-case corpus"}, improvement:{status:"UNKNOWN", reason:"no before/after artifacts with the same digest identities"}, external_utility:{status:"UNKNOWN", reason:"outside the bounded corpus is not measured"}}}' > "$evidence_dir/conformance.json"
+	'{schema:"gooo.conformance/v1", authority:$authority, status:"CLOSED", repository:$repository, commit:$commit, ref:$ref, event:$event, pull_request:{number:$pr_number, merge_commit:$merge_commit}, run:{id:$run_id, attempt:$run_attempt, workflow:$workflow, job:$job}, artifact:{name:"gooo-conformance", path:"evidence/"}, validation:$validation[0], corpus_summary:$summary[0], vectors:$vectors[0], counterexample:$counterexample[0], inventory:$inventory[0], claims:{bounded_self_hosting:{status:"CLOSED", scope:"schema to generated evaluator to frozen oracle over fixed 12-case corpus"}, improvement:{status:"UNKNOWN", reason:"no before/after artifacts with the same digest identities"}, external_utility:{status:"UNKNOWN", reason:"outside the bounded corpus is not measured"}}}' > "$evidence_dir/conformance.json"
 
 jq -e '.status == "CLOSED" and .claims.improvement.status == "UNKNOWN" and .claims.external_utility.status == "UNKNOWN" and (.vectors | length == 12) and .counterexample.verdict == "REFUTED"' "$evidence_dir/conformance.json"
