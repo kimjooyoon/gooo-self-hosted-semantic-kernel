@@ -1,0 +1,375 @@
+// Code generated from .gooo/semantic.gooo by gooo generate. DO NOT EDIT.
+package main
+
+import (
+	"crypto/sha256"
+	"encoding/hex"
+	"encoding/json"
+	"fmt"
+	"strings"
+)
+
+type Status string
+
+const (
+	StatusClosed  Status = "CLOSED"
+	StatusUnknown Status = "UNKNOWN"
+	StatusRefuted Status = "REFUTED"
+)
+
+type Value struct {
+	Type   string  `json:"type"`
+	Int    *int64  `json:"int,omitempty"`
+	Bool   *bool   `json:"bool,omitempty"`
+	String *string `json:"string,omitempty"`
+}
+
+type EffectEvent struct {
+	Ordinal int   `json:"ordinal"`
+	Effect  string `json:"effect"`
+	Value   Value  `json:"value"`
+}
+
+type Unknown struct {
+	Stage         string `json:"stage"`
+	Step          string `json:"step"`
+	Reason        string `json:"reason"`
+	UnknownClass  string `json:"unknown_class"`
+	NextOperation string `json:"next_operation"`
+	BlockedBy     string `json:"blocked_by"`
+}
+
+type Step struct {
+	Op             string   `json:"op"`
+	Int            *int64   `json:"int,omitempty"`
+	Bool           *bool    `json:"bool,omitempty"`
+	String         string   `json:"string,omitempty"`
+	Name           string   `json:"name,omitempty"`
+	UnknownKey     string   `json:"unknown_key,omitempty"`
+	Effect         string   `json:"effect,omitempty"`
+	Rule           string   `json:"rule,omitempty"`
+	PriorState     string   `json:"prior_state,omitempty"`
+	NextState      string   `json:"next_state,omitempty"`
+	ObservedStates []string `json:"observed_states,omitempty"`
+	MaxSteps       int      `json:"max_steps,omitempty"`
+	CycleDetected  bool     `json:"cycle_detected,omitempty"`
+	Reason         string   `json:"reason,omitempty"`
+}
+
+type CaseSpec struct {
+	CaseID         string           `json:"case_id"`
+	SemanticID     string           `json:"semantic_id"`
+	EdgeID         string           `json:"edge_id"`
+	CellID         string           `json:"cell_id"`
+	MetaActivityID string           `json:"meta_activity_id"`
+	ProofChoiceID  string           `json:"proof_choice_id"`
+	IndicatorID    string           `json:"indicator_id"`
+	ExpectedStatus Status           `json:"expected_status"`
+	Externals      map[string]Value `json:"externals,omitempty"`
+	Grants         []string         `json:"grants,omitempty"`
+	Program        []Step           `json:"program"`
+}
+
+type corpusDocument struct {
+	Cases []CaseSpec `json:"cases"`
+}
+
+type Descriptor struct {
+	SemanticSchemaDigest string
+	CorpusDigest         string
+	DeclaredTypes        []string
+	DeclaredOperations   []string
+	ComparisonFields     []string
+	IdentityFields       []string
+	UnknownFields        []string
+	Precedence           []Status
+	Unknowns             map[string]Unknown
+	FixedPointKeyword    string
+	FixedPointUnstable   Status
+	FixedPointCycle      Status
+}
+
+var descriptor = Descriptor{
+	SemanticSchemaDigest: __SCHEMA_DIGEST__,
+	CorpusDigest:         __CORPUS_DIGEST__,
+	DeclaredTypes:        __TYPES__,
+	DeclaredOperations:   __OPERATIONS__,
+	ComparisonFields:     __COMPARISON_FIELDS__,
+	IdentityFields:       __IDENTITY_FIELDS__,
+	UnknownFields:        __UNKNOWN_FIELDS__,
+	Precedence:           __PRECEDENCE__,
+	Unknowns:             __UNKNOWN_TEMPLATES__,
+	FixedPointKeyword:    __FIXED_POINT_KEYWORD__,
+	FixedPointUnstable:   Status(__FIXED_POINT_UNSTABLE__),
+	FixedPointCycle:      Status(__FIXED_POINT_CYCLE__),
+}
+
+var corpusJSON = __CORPUS_JSON__
+
+func loadCases() (map[string]CaseSpec, error) {
+	var document corpusDocument
+	if err := json.Unmarshal([]byte(corpusJSON), &document); err != nil {
+		return nil, err
+	}
+	cases := make(map[string]CaseSpec, len(document.Cases))
+	for _, c := range document.Cases {
+		cases[c.CaseID] = c
+	}
+	return cases, nil
+}
+
+type outcome struct {
+	Schema               string         `json:"schema"`
+	CaseID               string         `json:"case_id"`
+	SemanticID           string         `json:"semantic_id"`
+	EdgeID               string         `json:"edge_id"`
+	SemanticSchemaDigest string         `json:"semantic_schema_digest"`
+	CorpusDigest         string         `json:"corpus_digest"`
+	Status               Status         `json:"status"`
+	TypedValue           *Value         `json:"typed_value,omitempty"`
+	OrderedEffectTrace   []EffectEvent  `json:"ordered_effect_trace"`
+	Reason               string         `json:"reason,omitempty"`
+	Unknown              *Unknown       `json:"unknown,omitempty"`
+	TerminalDigest       string         `json:"terminal_digest"`
+}
+
+type terminalPayload struct {
+	Status             Status        `json:"status"`
+	TypedValue         *Value        `json:"typed_value,omitempty"`
+	OrderedEffectTrace []EffectEvent `json:"ordered_effect_trace"`
+	Reason             string        `json:"reason,omitempty"`
+	Unknown            *Unknown      `json:"unknown,omitempty"`
+}
+
+func intValue(value int64) Value     { return Value{Type: "int", Int: &value} }
+func boolValue(value bool) Value     { return Value{Type: "bool", Bool: &value} }
+func stringValue(value string) Value { return Value{Type: "string", String: &value} }
+
+func unknownFor(key, subject string) (*Unknown, error) {
+	template, ok := descriptor.Unknowns[key]
+	if !ok {
+		return nil, fmt.Errorf("UNKNOWN template %s is not declared", key)
+	}
+	template.Reason = strings.ReplaceAll(template.Reason, "%s", subject)
+	template.Step = strings.ReplaceAll(template.Step, "%s", subject)
+	template.NextOperation = strings.ReplaceAll(template.NextOperation, "%s", subject)
+	template.BlockedBy = strings.ReplaceAll(template.BlockedBy, "%s", subject)
+	return &template, nil
+}
+
+func hasGrant(grants []string, wanted string) bool {
+	for _, grant := range grants {
+		if grant == wanted {
+			return true
+		}
+	}
+	return false
+}
+
+func rank(status Status) int {
+	for index, candidate := range descriptor.Precedence {
+		if candidate == status {
+			return len(descriptor.Precedence) - index
+		}
+	}
+	return 0
+}
+
+func dominant(statuses []Status) Status {
+	chosen := StatusClosed
+	for _, status := range statuses {
+		if rank(status) > rank(chosen) {
+			chosen = status
+		}
+	}
+	return chosen
+}
+
+func evaluateStep(c CaseSpec, step Step, ordinal int) (Status, *Value, *EffectEvent, *Unknown, string, error) {
+	switch step.Op {
+	case "RETURN_INT":
+		value := intValue(*step.Int)
+		return StatusClosed, &value, nil, nil, "", nil
+	case "RETURN_BOOL":
+		value := boolValue(*step.Bool)
+		return StatusClosed, &value, nil, nil, "", nil
+	case "RETURN_STRING":
+		value := stringValue(step.String)
+		return StatusClosed, &value, nil, nil, "", nil
+	case "EXTERNAL_INT":
+		value, found := c.Externals[step.Name]
+		if !found {
+			key := step.UnknownKey
+			if key == "" {
+				key = "external_value"
+			}
+			u, err := unknownFor(key, step.Name)
+			if err != nil {
+				return StatusRefuted, nil, nil, nil, err.Error(), err
+			}
+			return StatusUnknown, nil, nil, u, u.Reason, nil
+		}
+		if value.Type != "int" || value.Int == nil {
+			return StatusRefuted, nil, nil, nil, "external value is not int", nil
+		}
+		return StatusClosed, &value, nil, nil, "", nil
+	case "EXTERNAL_BOOL":
+		value, found := c.Externals[step.Name]
+		if !found {
+			key := step.UnknownKey
+			if key == "" {
+				key = "external_value"
+			}
+			u, err := unknownFor(key, step.Name)
+			if err != nil {
+				return StatusRefuted, nil, nil, nil, err.Error(), err
+			}
+			return StatusUnknown, nil, nil, u, u.Reason, nil
+		}
+		if value.Type != "bool" || value.Bool == nil {
+			return StatusRefuted, nil, nil, nil, "external value is not bool", nil
+		}
+		return StatusClosed, &value, nil, nil, "", nil
+	case "EFFECT_INT":
+		if step.Effect != "emit" {
+			return StatusRefuted, nil, nil, nil, "EFFECT_INT effect must be emit", nil
+		}
+		if !hasGrant(c.Grants, step.Effect) {
+			u, err := unknownFor("missing_effect_grant", step.Effect)
+			if err != nil {
+				return StatusRefuted, nil, nil, nil, err.Error(), err
+			}
+			return StatusUnknown, nil, nil, u, u.Reason, nil
+		}
+		return StatusClosed, nil, &EffectEvent{Ordinal: ordinal, Effect: "emit", Value: intValue(*step.Int)}, nil, "", nil
+	case "EFFECT_BOOL":
+		if step.Effect != "audit" {
+			return StatusRefuted, nil, nil, nil, "EFFECT_BOOL effect must be audit", nil
+		}
+		if !hasGrant(c.Grants, step.Effect) {
+			u, err := unknownFor("missing_effect_grant", step.Effect)
+			if err != nil {
+				return StatusRefuted, nil, nil, nil, err.Error(), err
+			}
+			return StatusUnknown, nil, nil, u, u.Reason, nil
+		}
+		return StatusClosed, nil, &EffectEvent{Ordinal: ordinal, Effect: "audit", Value: boolValue(*step.Bool)}, nil, "", nil
+	case "FIXED_POINT":
+		if step.Rule != descriptor.FixedPointKeyword {
+			return StatusRefuted, nil, nil, nil, "FIXED_POINT keyword mismatch", nil
+		}
+		if step.CycleDetected {
+			return descriptor.FixedPointCycle, nil, nil, nil, "FIXED_POINT cycle detected", nil
+		}
+		if step.PriorState == step.NextState && len(step.ObservedStates) <= step.MaxSteps {
+			value := stringValue(step.NextState)
+			return StatusClosed, &value, nil, nil, "", nil
+		}
+		if len(step.ObservedStates) <= step.MaxSteps {
+			u, err := unknownFor("fixed_point_not_reached", step.Rule)
+			if err != nil {
+				return StatusRefuted, nil, nil, nil, err.Error(), err
+			}
+			return descriptor.FixedPointUnstable, nil, nil, u, u.Reason, nil
+		}
+		return descriptor.FixedPointCycle, nil, nil, nil, "FIXED_POINT exceeded max_steps", nil
+	case "REFUTE":
+		return StatusRefuted, nil, nil, nil, step.Reason, nil
+	default:
+		return StatusRefuted, nil, nil, nil, "unsupported operation", nil
+	}
+}
+
+func EvaluateCase(caseID string) (outcome, error) {
+	cases, err := loadCases()
+	if err != nil {
+		return outcome{}, err
+	}
+	c, ok := cases[caseID]
+	if !ok {
+		return outcome{}, fmt.Errorf("case %s not found", caseID)
+	}
+	out := outcome{
+		Schema:               "gooo.evaluation/v1",
+		CaseID:               c.CaseID,
+		SemanticID:           c.SemanticID,
+		EdgeID:               c.EdgeID,
+		SemanticSchemaDigest: descriptor.SemanticSchemaDigest,
+		CorpusDigest:         descriptor.CorpusDigest,
+		OrderedEffectTrace:   []EffectEvent{},
+	}
+	statuses := make([]Status, 0, len(c.Program))
+	var result *Value
+	var unknown *Unknown
+	refutedReason := ""
+	for _, step := range c.Program {
+		status, value, event, issueUnknown, issueReason, stepErr := evaluateStep(c, step, len(out.OrderedEffectTrace))
+		if stepErr != nil {
+			return outcome{}, stepErr
+		}
+		statuses = append(statuses, status)
+		if value != nil {
+			copy := *value
+			result = &copy
+		}
+		if event != nil {
+			out.OrderedEffectTrace = append(out.OrderedEffectTrace, *event)
+		}
+		if issueUnknown != nil && unknown == nil {
+			unknown = issueUnknown
+		}
+		if status == StatusRefuted && refutedReason == "" {
+			refutedReason = issueReason
+		}
+	}
+	out.Status = dominant(statuses)
+	switch out.Status {
+	case StatusClosed:
+		if result == nil {
+			out.Status = StatusRefuted
+			out.Reason = "CLOSED decision had no typed value"
+		} else {
+			out.TypedValue = result
+		}
+	case StatusUnknown:
+		out.Unknown = unknown
+		if unknown != nil {
+			out.Reason = unknown.Reason
+		} else {
+			out.Reason = "UNKNOWN decision lost its six-field record"
+		}
+	case StatusRefuted:
+		out.Reason = refutedReason
+		if out.Reason == "" {
+			out.Reason = "REFUTED observation dominates lower-status observations"
+		}
+	}
+	if out.Status != StatusUnknown {
+		out.Unknown = nil
+	}
+	if out.Status != StatusClosed {
+		out.TypedValue = nil
+	}
+	return finalize(out)
+}
+
+func digestBytes(raw []byte) string {
+	digest := sha256.Sum256(raw)
+	return "sha256:" + hex.EncodeToString(digest[:])
+}
+
+func finalize(out outcome) (outcome, error) {
+	payload := terminalPayload{
+		Status:             out.Status,
+		TypedValue:         out.TypedValue,
+		OrderedEffectTrace: out.OrderedEffectTrace,
+		Reason:             out.Reason,
+		Unknown:            out.Unknown,
+	}
+	raw, err := json.Marshal(payload)
+	if err != nil {
+		return outcome{}, err
+	}
+	out.TerminalDigest = digestBytes(raw)
+	return out, nil
+}

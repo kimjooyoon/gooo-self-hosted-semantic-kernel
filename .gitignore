@@ -1,0 +1,10 @@
+generated/*
+!generated/.gitkeep
+evidence/*.json
+evidence/*.txt
+evidence/outputs/
+evidence/comparisons/
+evidence/reference/
+evidence/candidate/
+*.test
+*.bin
