@@ -38,6 +38,7 @@ jobs:
         shell: bash
         run: |
           go_files="$(find . -type f -name '*.go' -not -path './.git/*' -not -path './generated/*' -print)"
+          gofmt -d $go_files
           test -z "$(gofmt -l $go_files)"
 
       - name: Check shell syntax
@@ -67,9 +68,8 @@ jobs:
   actionlint:
     name: actionlint
     runs-on: ubuntu-latest
-    container: rhysd/actionlint:latest
     steps:
       - name: Check out the pull request
         uses: actions/checkout@v4
       - name: Lint workflows
-        run: actionlint -color
+        run: docker run --rm -v "$GITHUB_WORKSPACE:/repo" -w /repo rhysd/actionlint:latest -color
