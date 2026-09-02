@@ -232,7 +232,7 @@ func evaluateStep(c CaseSpec, step Step, ordinal int) (Status, *Value, *EffectEv
 		return StatusClosed, &value, nil, nil, "", nil
 	case "EFFECT_INT":
 		if step.Effect != "emit" {
-			return StatusRefuted, nil, nil, nil, "EFFECT_INT effect must be emit", nil
+			return StatusRefuted, nil, nil, nil, fmt.Sprintf("EFFECT_INT cannot use effect %s", step.Effect), nil
 		}
 		if !hasGrant(c.Grants, step.Effect) {
 			u, err := unknownFor("missing_effect_grant", step.Effect)
@@ -244,7 +244,7 @@ func evaluateStep(c CaseSpec, step Step, ordinal int) (Status, *Value, *EffectEv
 		return StatusClosed, nil, &EffectEvent{Ordinal: ordinal, Effect: "emit", Value: intValue(*step.Int)}, nil, "", nil
 	case "EFFECT_BOOL":
 		if step.Effect != "audit" {
-			return StatusRefuted, nil, nil, nil, "EFFECT_BOOL effect must be audit", nil
+			return StatusRefuted, nil, nil, nil, fmt.Sprintf("EFFECT_BOOL cannot use effect %s", step.Effect), nil
 		}
 		if !hasGrant(c.Grants, step.Effect) {
 			u, err := unknownFor("missing_effect_grant", step.Effect)
