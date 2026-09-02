@@ -48,13 +48,20 @@ while IFS= read -r case_id; do
 	"$evidence_dir/gooo-generated.bin" --case-id "$case_id" --output "$evidence_dir/candidate/$case_id.json"
 	expected="$(jq -r --arg case_id "$case_id" '.vectors[] | select(.case_id == $case_id) | .expected_status' "$evidence_dir/summary.json")"
 	go run ./cmd/gooo compare --schema "$schema_path" --corpus "$corpus_path" --case-id "$case_id" --expected "$expected" --reference "$evidence_dir/reference/$case_id.json" --candidate "$evidence_dir/candidate/$case_id.json" --output "$evidence_dir/comparisons/$case_id.json"
-	jq -e --arg case_id "$case_id" '
+	jq -c '{case_id, expected_status, verdict, matched, byte_equal, semantic_identity_equal, typed_value_equal, ordered_effect_trace_equal, terminal_digest_equal}' "$evidence_dir/comparisons/$case_id.json"
+	if ! jq -e --arg case_id "$case_id" '
 		.case_id == $case_id and .matched == true and .byte_equal == true and
 		.semantic_identity_equal == true and .typed_value_equal == true and
 		.ordered_effect_trace_equal == true and .terminal_digest_equal == true and
 		.reference_terminal_digest_valid == true and .candidate_terminal_digest_valid == true and
 		.verdict == .expected_status
-	' "$evidence_dir/comparisons/$case_id.json"
+	' "$evidence_dir/comparisons/$case_id.json"; then
+		printf '%s\n' "reference outcome:"
+		jq -S . "$evidence_dir/reference/$case_id.json"
+		printf '%s\n' "candidate outcome:"
+		jq -S . "$evidence_dir/candidate/$case_id.json"
+		exit 1
+	fi
 done < "$evidence_dir/case-ids.txt"
 
 go run ./cmd/gooo compare --schema "$schema_path" --corpus "$corpus_path" --case-id case-02-closed-effect --expected REFUTED --reference fixtures/counterexamples/reference.json --candidate fixtures/counterexamples/candidate.json --output "$evidence_dir/counterexample.json"
