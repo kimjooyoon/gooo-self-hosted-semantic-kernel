@@ -154,27 +154,27 @@ type Step struct {
 	Name           string   `json:"name,omitempty"`
 	UnknownKey     string   `json:"unknown_key,omitempty"`
 	Effect         string   `json:"effect,omitempty"`
-	Rule            string   `json:"rule,omitempty"`
-	PriorState      string   `json:"prior_state,omitempty"`
-	NextState       string   `json:"next_state,omitempty"`
+	Rule           string   `json:"rule,omitempty"`
+	PriorState     string   `json:"prior_state,omitempty"`
+	NextState      string   `json:"next_state,omitempty"`
 	ObservedStates []string `json:"observed_states,omitempty"`
-	MaxSteps        int      `json:"max_steps,omitempty"`
-	CycleDetected   bool     `json:"cycle_detected,omitempty"`
-	Reason          string   `json:"reason,omitempty"`
+	MaxSteps       int      `json:"max_steps,omitempty"`
+	CycleDetected  bool     `json:"cycle_detected,omitempty"`
+	Reason         string   `json:"reason,omitempty"`
 }
 
 type CaseSpec struct {
-	CaseID          string            `json:"case_id"`
-	SemanticID      string            `json:"semantic_id"`
-	EdgeID          string            `json:"edge_id"`
-	CellID          string            `json:"cell_id"`
-	MetaActivityID  string            `json:"meta_activity_id"`
-	ProofChoiceID   string            `json:"proof_choice_id"`
-	IndicatorID     string            `json:"indicator_id"`
-	ExpectedStatus  Status            `json:"expected_status"`
-	Externals       map[string]Value  `json:"externals,omitempty"`
-	Grants          []string          `json:"grants,omitempty"`
-	Program         []Step            `json:"program"`
+	CaseID         string           `json:"case_id"`
+	SemanticID     string           `json:"semantic_id"`
+	EdgeID         string           `json:"edge_id"`
+	CellID         string           `json:"cell_id"`
+	MetaActivityID string           `json:"meta_activity_id"`
+	ProofChoiceID  string           `json:"proof_choice_id"`
+	IndicatorID    string           `json:"indicator_id"`
+	ExpectedStatus Status           `json:"expected_status"`
+	Externals      map[string]Value `json:"externals,omitempty"`
+	Grants         []string         `json:"grants,omitempty"`
+	Program        []Step           `json:"program"`
 }
 
 type Corpus struct {

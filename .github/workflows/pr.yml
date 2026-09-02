@@ -22,6 +22,7 @@ jobs:
         with:
           go-version: 1.27.x
           check-latest: true
+          cache: false
 
       - name: Assert source declarations with jq
         run: |

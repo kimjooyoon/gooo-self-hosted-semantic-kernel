@@ -98,24 +98,24 @@ func ValidTerminalDigest(outcome Outcome) bool {
 }
 
 type ComparisonReport struct {
-	Schema                    string   `json:"schema"`
-	CaseID                    string   `json:"case_id"`
-	ExpectedStatus            Status   `json:"expected_status"`
-	Verdict                   Status   `json:"verdict"`
-	Matched                   bool     `json:"matched"`
-	ByteEqual                 bool     `json:"byte_equal"`
-	ReferenceBytesDigest      string   `json:"reference_bytes_digest"`
-	CandidateBytesDigest      string   `json:"candidate_bytes_digest"`
-	SemanticIdentityEqual     bool     `json:"semantic_identity_equal"`
-	TypedValueEqual           bool     `json:"typed_value_equal"`
-	OrderedEffectTraceEqual   bool     `json:"ordered_effect_trace_equal"`
-	TerminalDigestEqual       bool     `json:"terminal_digest_equal"`
-	ReferenceTerminalValid    bool     `json:"reference_terminal_digest_valid"`
-	CandidateTerminalValid    bool     `json:"candidate_terminal_digest_valid"`
-	Compared                  []string `json:"compared"`
-	ReferenceStatus           Status   `json:"reference_status"`
-	CandidateStatus           Status   `json:"candidate_status"`
-	Reason                    string   `json:"reason"`
+	Schema                  string   `json:"schema"`
+	CaseID                  string   `json:"case_id"`
+	ExpectedStatus          Status   `json:"expected_status"`
+	Verdict                 Status   `json:"verdict"`
+	Matched                 bool     `json:"matched"`
+	ByteEqual               bool     `json:"byte_equal"`
+	ReferenceBytesDigest    string   `json:"reference_bytes_digest"`
+	CandidateBytesDigest    string   `json:"candidate_bytes_digest"`
+	SemanticIdentityEqual   bool     `json:"semantic_identity_equal"`
+	TypedValueEqual         bool     `json:"typed_value_equal"`
+	OrderedEffectTraceEqual bool     `json:"ordered_effect_trace_equal"`
+	TerminalDigestEqual     bool     `json:"terminal_digest_equal"`
+	ReferenceTerminalValid  bool     `json:"reference_terminal_digest_valid"`
+	CandidateTerminalValid  bool     `json:"candidate_terminal_digest_valid"`
+	Compared                []string `json:"compared"`
+	ReferenceStatus         Status   `json:"reference_status"`
+	CandidateStatus         Status   `json:"candidate_status"`
+	Reason                  string   `json:"reason"`
 }
 
 func Compare(precedence []Status, caseID string, expected Status, reference Outcome, referenceRaw []byte, candidate Outcome, candidateRaw []byte) ComparisonReport {
