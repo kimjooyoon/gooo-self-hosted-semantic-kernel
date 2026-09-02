@@ -55,17 +55,17 @@ func validateCommand(args []string) {
 	flags.Parse(args)
 	schema, schemaRaw, corpus, corpusRaw := loadInputs(*schemaPath, *corpusPath)
 	report := validationReport{
-		Schema:                "gooo.validation/v1",
-		Status:                kernel.StatusClosed,
+		Schema:               "gooo.validation/v1",
+		Status:               kernel.StatusClosed,
 		SemanticSchemaDigest: kernel.DigestBytes(schemaRaw),
-		CorpusDigest:          kernel.DigestBytes(corpusRaw),
-		DecisionPrecedence:    schema.Decision.Precedence,
-		UnknownFields:         schema.Unknown.Fields,
-		FixedPointKeyword:     schema.FixedPoint.Keyword,
-		EntityCounts:          corpus.EntityCounts,
-		ProofChoicesByStatus:  countProofChoices(corpus.ProofChoices),
-		IndicatorsByStatus:     countIndicators(corpus.Indicators),
-		CasesByStatus:          countCases(corpus.Cases),
+		CorpusDigest:         kernel.DigestBytes(corpusRaw),
+		DecisionPrecedence:   schema.Decision.Precedence,
+		UnknownFields:        schema.Unknown.Fields,
+		FixedPointKeyword:    schema.FixedPoint.Keyword,
+		EntityCounts:         corpus.EntityCounts,
+		ProofChoicesByStatus: countProofChoices(corpus.ProofChoices),
+		IndicatorsByStatus:   countIndicators(corpus.Indicators),
+		CasesByStatus:        countCases(corpus.Cases),
 	}
 	writeJSON(*output, report)
 }
@@ -84,8 +84,8 @@ func generateCommand(args []string) {
 		"schema":                 "gooo.generation/v1",
 		"status":                 kernel.StatusClosed,
 		"semantic_schema_digest": kernel.DigestBytes(schemaRaw),
-		"corpus_digest":           kernel.DigestBytes(corpusRaw),
-		"generated_files":         []string{"evaluator.go", "main.go"},
+		"corpus_digest":          kernel.DigestBytes(corpusRaw),
+		"generated_files":        []string{"evaluator.go", "main.go"},
 	})
 }
 
@@ -160,30 +160,30 @@ func summaryCommand(args []string) {
 		"schema":                 "gooo.corpus-summary/v1",
 		"status":                 kernel.StatusClosed,
 		"semantic_schema_digest": kernel.DigestBytes(schemaRaw),
-		"corpus_digest":           kernel.DigestBytes(corpusRaw),
+		"corpus_digest":          kernel.DigestBytes(corpusRaw),
 		"vectors":                vectors,
 	})
 }
 
 type validationReport struct {
-	Schema                 string                     `json:"schema"`
-	Status                 kernel.Status              `json:"status"`
-	SemanticSchemaDigest   string                     `json:"semantic_schema_digest"`
-	CorpusDigest           string                     `json:"corpus_digest"`
-	DecisionPrecedence     []kernel.Status             `json:"decision_precedence"`
-	UnknownFields          []string                   `json:"unknown_fields"`
-	FixedPointKeyword      string                     `json:"fixed_point_keyword"`
-	EntityCounts           map[string]int             `json:"entity_counts"`
-	ProofChoicesByStatus   map[kernel.Status]int      `json:"proof_choices_by_status"`
-	IndicatorsByStatus     map[kernel.Status]int      `json:"indicators_by_status"`
-	CasesByStatus          map[kernel.Status]int      `json:"cases_by_status"`
+	Schema               string                `json:"schema"`
+	Status               kernel.Status         `json:"status"`
+	SemanticSchemaDigest string                `json:"semantic_schema_digest"`
+	CorpusDigest         string                `json:"corpus_digest"`
+	DecisionPrecedence   []kernel.Status       `json:"decision_precedence"`
+	UnknownFields        []string              `json:"unknown_fields"`
+	FixedPointKeyword    string                `json:"fixed_point_keyword"`
+	EntityCounts         map[string]int        `json:"entity_counts"`
+	ProofChoicesByStatus map[kernel.Status]int `json:"proof_choices_by_status"`
+	IndicatorsByStatus   map[kernel.Status]int `json:"indicators_by_status"`
+	CasesByStatus        map[kernel.Status]int `json:"cases_by_status"`
 }
 
 type vectorSummary struct {
 	CaseID         string        `json:"case_id"`
 	SemanticID     string        `json:"semantic_id"`
 	EdgeID         string        `json:"edge_id"`
-	ExpectedStatus kernel.Status  `json:"expected_status"`
+	ExpectedStatus kernel.Status `json:"expected_status"`
 }
 
 func countProofChoices(values []kernel.ProofChoice) map[kernel.Status]int {

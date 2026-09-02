@@ -24,9 +24,9 @@ type Value struct {
 }
 
 type EffectEvent struct {
-	Ordinal int   `json:"ordinal"`
+	Ordinal int    `json:"ordinal"`
 	Effect  string `json:"effect"`
-	Value   Value `json:"value"`
+	Value   Value  `json:"value"`
 }
 
 type Unknown struct {
@@ -46,25 +46,25 @@ func (u Unknown) Validate() error {
 }
 
 type Outcome struct {
-	Schema              string         `json:"schema"`
-	CaseID              string         `json:"case_id"`
-	SemanticID          string         `json:"semantic_id"`
-	EdgeID              string         `json:"edge_id"`
+	Schema               string        `json:"schema"`
+	CaseID               string        `json:"case_id"`
+	SemanticID           string        `json:"semantic_id"`
+	EdgeID               string        `json:"edge_id"`
 	SemanticSchemaDigest string        `json:"semantic_schema_digest"`
-	CorpusDigest        string         `json:"corpus_digest"`
-	Status              Status         `json:"status"`
-	TypedValue          *Value         `json:"typed_value,omitempty"`
-	OrderedEffectTrace  []EffectEvent  `json:"ordered_effect_trace"`
-	Reason              string         `json:"reason,omitempty"`
-	Unknown             *Unknown       `json:"unknown,omitempty"`
-	TerminalDigest      string         `json:"terminal_digest"`
+	CorpusDigest         string        `json:"corpus_digest"`
+	Status               Status        `json:"status"`
+	TypedValue           *Value        `json:"typed_value,omitempty"`
+	OrderedEffectTrace   []EffectEvent `json:"ordered_effect_trace"`
+	Reason               string        `json:"reason,omitempty"`
+	Unknown              *Unknown      `json:"unknown,omitempty"`
+	TerminalDigest       string        `json:"terminal_digest"`
 }
 
 type IdentityField struct {
-	Field       string `json:"field"`
-	Authority   string `json:"authority"`
-	Uniqueness  string `json:"uniqueness"`
-	Meaning     string `json:"meaning"`
+	Field      string `json:"field"`
+	Authority  string `json:"authority"`
+	Uniqueness string `json:"uniqueness"`
+	Meaning    string `json:"meaning"`
 }
 
 type IdentitySchema struct {
@@ -73,11 +73,11 @@ type IdentitySchema struct {
 }
 
 type DecisionSchema struct {
-	Statuses             []Status `json:"statuses"`
-	Precedence           []Status `json:"precedence"`
-	FailClosedOnUnknown  bool     `json:"fail_closed_on_unknown"`
-	ComparisonFields     []string `json:"comparison_fields"`
-	TopDecision          string   `json:"top_decision"`
+	Statuses            []Status `json:"statuses"`
+	Precedence          []Status `json:"precedence"`
+	FailClosedOnUnknown bool     `json:"fail_closed_on_unknown"`
+	ComparisonFields    []string `json:"comparison_fields"`
+	TopDecision         string   `json:"top_decision"`
 }
 
 type UnknownSchema struct {
@@ -86,11 +86,11 @@ type UnknownSchema struct {
 }
 
 type FixedPointSchema struct {
-	Keyword          string `json:"keyword"`
-	Rule             string `json:"rule"`
-	MaxStepsRequired bool   `json:"max_steps_required"`
-	UnstableStatus   Status `json:"unstable_status"`
-	CycleStatus      Status `json:"cycle_status"`
+	Keyword           string `json:"keyword"`
+	Rule              string `json:"rule"`
+	MaxStepsRequired  bool   `json:"max_steps_required"`
+	UnstableStatus    Status `json:"unstable_status"`
+	CycleStatus       Status `json:"cycle_status"`
 	MissingRuleStatus Status `json:"missing_rule_status"`
 }
 
@@ -101,16 +101,16 @@ type OperationSchema struct {
 }
 
 type SemanticSchema struct {
-	Schema    string                     `json:"schema"`
-	Authority string                     `json:"authority"`
-	Language  string                     `json:"language"`
-	Version   string                     `json:"version"`
-	Scope     string                     `json:"scope"`
-	Types     []string                   `json:"types"`
-	Identity  IdentitySchema             `json:"identity"`
-	Decision  DecisionSchema             `json:"decision"`
-	Unknown   UnknownSchema              `json:"unknown"`
-	FixedPoint FixedPointSchema          `json:"fixed_point"`
+	Schema     string                     `json:"schema"`
+	Authority  string                     `json:"authority"`
+	Language   string                     `json:"language"`
+	Version    string                     `json:"version"`
+	Scope      string                     `json:"scope"`
+	Types      []string                   `json:"types"`
+	Identity   IdentitySchema             `json:"identity"`
+	Decision   DecisionSchema             `json:"decision"`
+	Unknown    UnknownSchema              `json:"unknown"`
+	FixedPoint FixedPointSchema           `json:"fixed_point"`
 	Operations map[string]OperationSchema `json:"operations"`
 }
 
@@ -147,20 +147,20 @@ type Indicator struct {
 }
 
 type Step struct {
-	Op            string   `json:"op"`
-	Int           *int64   `json:"int,omitempty"`
-	Bool          *bool    `json:"bool,omitempty"`
-	String        string   `json:"string,omitempty"`
-	Name          string   `json:"name,omitempty"`
-	UnknownKey    string   `json:"unknown_key,omitempty"`
-	Effect        string   `json:"effect,omitempty"`
-	Rule          string   `json:"rule,omitempty"`
-	PriorState    string   `json:"prior_state,omitempty"`
-	NextState     string   `json:"next_state,omitempty"`
+	Op             string   `json:"op"`
+	Int            *int64   `json:"int,omitempty"`
+	Bool           *bool    `json:"bool,omitempty"`
+	String         string   `json:"string,omitempty"`
+	Name           string   `json:"name,omitempty"`
+	UnknownKey     string   `json:"unknown_key,omitempty"`
+	Effect         string   `json:"effect,omitempty"`
+	Rule            string   `json:"rule,omitempty"`
+	PriorState      string   `json:"prior_state,omitempty"`
+	NextState       string   `json:"next_state,omitempty"`
 	ObservedStates []string `json:"observed_states,omitempty"`
-	MaxSteps      int      `json:"max_steps,omitempty"`
-	CycleDetected bool     `json:"cycle_detected,omitempty"`
-	Reason        string   `json:"reason,omitempty"`
+	MaxSteps        int      `json:"max_steps,omitempty"`
+	CycleDetected   bool     `json:"cycle_detected,omitempty"`
+	Reason          string   `json:"reason,omitempty"`
 }
 
 type CaseSpec struct {

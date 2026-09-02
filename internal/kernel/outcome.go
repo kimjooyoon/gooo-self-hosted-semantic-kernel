@@ -113,9 +113,9 @@ type ComparisonReport struct {
 	ReferenceTerminalValid    bool     `json:"reference_terminal_digest_valid"`
 	CandidateTerminalValid    bool     `json:"candidate_terminal_digest_valid"`
 	Compared                  []string `json:"compared"`
-	ReferenceStatus            Status   `json:"reference_status"`
-	CandidateStatus            Status   `json:"candidate_status"`
-	Reason                     string   `json:"reason"`
+	ReferenceStatus           Status   `json:"reference_status"`
+	CandidateStatus           Status   `json:"candidate_status"`
+	Reason                    string   `json:"reason"`
 }
 
 func Compare(precedence []Status, caseID string, expected Status, reference Outcome, referenceRaw []byte, candidate Outcome, candidateRaw []byte) ComparisonReport {
