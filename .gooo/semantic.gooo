@@ -1,0 +1,121 @@
+{
+  "schema": "gooo.semantic-schema/v1",
+  "authority": "github.com/kimjooyoon/gooo-self-hosted-semantic-kernel/.gooo/semantic.gooo",
+  "language": "Gooo",
+  "version": "0.1.0",
+  "scope": "bounded self-hosting of this minimum semantic slice only",
+  "types": ["Cell", "MetaActivity", "ProofChoice", "Indicator", "Decision", "Unknown"],
+  "identity": {
+    "semantic_id": {
+      "field": "semantic_id",
+      "authority": "this semantic schema and its corpus",
+      "uniqueness": "global",
+      "meaning": "stable identity of a semantic entity; never generated from position"
+    },
+    "edge_id": {
+      "field": "edge_id",
+      "authority": "this semantic schema and its corpus",
+      "uniqueness": "global",
+      "meaning": "stable identity of one typed relation; never generated from position"
+    }
+  },
+  "decision": {
+    "statuses": ["CLOSED", "UNKNOWN", "REFUTED"],
+    "precedence": ["REFUTED", "UNKNOWN", "CLOSED"],
+    "fail_closed_on_unknown": true,
+    "comparison_fields": ["output_bytes", "output_digest", "terminal_digest"],
+    "top_decision": "an UNKNOWN or REFUTED observation cannot be closed by a fallback"
+  },
+  "unknown": {
+    "fields": ["stage", "step", "reason", "unknown_class", "next_operation", "blocked_by"],
+    "templates": {
+      "external_value": {
+        "stage": "evaluate",
+        "step": "resolve-external-value",
+        "reason": "external value %s is not determined",
+        "unknown_class": "undetermined-external-value",
+        "next_operation": "provide %s and replay",
+        "blocked_by": "missing-external-input"
+      },
+      "top_decision": {
+        "stage": "decide",
+        "step": "resolve-top-decision",
+        "reason": "top decision is not determined because %s is unknown",
+        "unknown_class": "unknown-top-decision",
+        "next_operation": "resolve %s and replay",
+        "blocked_by": "unknown-observation"
+      },
+      "fixed_point_not_reached": {
+        "stage": "evaluate",
+        "step": "apply-FIXED_POINT",
+        "reason": "FIXED_POINT did not stabilize for %s within the declared bound",
+        "unknown_class": "unresolved-fixed-point",
+        "next_operation": "supply a stable state or extend the bounded fixture",
+        "blocked_by": "fixed-point-not-reached"
+      },
+      "missing_effect_grant": {
+        "stage": "evaluate",
+        "step": "authorize-effect-call",
+        "reason": "effect grant %s is absent",
+        "unknown_class": "missing-effect-grant",
+        "next_operation": "grant %s and replay",
+        "blocked_by": "effect-capability-boundary"
+      }
+    }
+  },
+  "fixed_point": {
+    "keyword": "FIXED_POINT",
+    "rule": "A state is CLOSED only when the canonical next state equals the prior state before max_steps; no default closure is permitted.",
+    "max_steps_required": true,
+    "unstable_status": "UNKNOWN",
+    "cycle_status": "REFUTED",
+    "missing_rule_status": "REFUTED"
+  },
+  "operations": {
+    "RETURN_INT": {
+      "input": "int",
+      "output": "typed_value",
+      "description": "produce an integer value"
+    },
+    "RETURN_BOOL": {
+      "input": "bool",
+      "output": "typed_value",
+      "description": "produce a boolean value"
+    },
+    "RETURN_STRING": {
+      "input": "string",
+      "output": "typed_value",
+      "description": "produce a string value"
+    },
+    "EXTERNAL_INT": {
+      "input": "string key",
+      "output": "int or UNKNOWN",
+      "description": "read a declared external integer or preserve UNKNOWN"
+    },
+    "EXTERNAL_BOOL": {
+      "input": "string key",
+      "output": "bool or UNKNOWN",
+      "description": "read a declared external boolean or preserve UNKNOWN"
+    },
+    "EFFECT_INT": {
+      "input": "int",
+      "output": "ordered effect trace or UNKNOWN",
+      "description": "emit an integer effect only with its explicit grant"
+    },
+    "EFFECT_BOOL": {
+      "input": "bool",
+      "output": "ordered effect trace or UNKNOWN",
+      "description": "audit a boolean effect only with its explicit grant"
+    },
+    "FIXED_POINT": {
+      "input": "prior state, next state, observed states, max_steps",
+      "output": "typed state, UNKNOWN, or REFUTED",
+      "description": "apply the explicit bounded FIXED_POINT rule"
+    },
+    "REFUTE": {
+      "input": "reason",
+      "output": "REFUTED",
+      "description": "record a semantic contradiction"
+    }
+  }
+}

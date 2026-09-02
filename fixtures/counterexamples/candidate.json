@@ -1,0 +1,12 @@
+{
+  "schema": "gooo.evaluation/v1",
+  "case_id": "case-02-closed-effect",
+  "semantic_id": "case-semantic-02",
+  "edge_id": "case-edge-02",
+  "semantic_schema_digest": "sha256:fixture-schema",
+  "corpus_digest": "sha256:fixture-corpus",
+  "status": "CLOSED",
+  "typed_value": {"type":"int","int":1},
+  "ordered_effect_trace": [{"ordinal":0,"effect":"audit","value":{"type":"int","int":1}}],
+  "terminal_digest": "sha256:fixture-candidate"
+}

@@ -1,0 +1,76 @@
+name: PR authoritative conformance
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  conformance:
+    name: go1.27 bounded conformance
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out the pull request
+        uses: actions/checkout@v4
+
+      - name: Set up Go 1.27
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.27.x
+          check-latest: true
+          cache: false
+
+      - name: Assert source declarations with jq
+        run: |
+          jq -e '.schema == "gooo.semantic-schema/v1" and .fixed_point.keyword == "FIXED_POINT" and .decision.precedence == ["REFUTED", "UNKNOWN", "CLOSED"]' .gooo/semantic.gooo
+          jq -e '.schema == "gooo.corpus/v1" and (.cases | length) == 12' .gooo/corpus.gooo
+
+      - name: Test packages
+        run: go test ./...
+
+      - name: Vet packages
+        run: go vet ./...
+
+      - name: Check Go formatting
+        shell: bash
+        run: |
+          mapfile -t go_files < <(find . -type f -name '*.go' -not -path './.git/*' -not -path './generated/*' -print)
+          gofmt -d "${go_files[@]}"
+          test -z "$(gofmt -l "${go_files[@]}")"
+
+      - name: Check shell syntax
+        run: bash -n scripts/ci-conformance.sh scripts/inventory.sh
+
+      - name: Run the authoritative conformance path
+        shell: bash
+        run: |
+          mkdir -p evidence
+          /usr/bin/time -f '%e %M' -o evidence/runtime.txt ./scripts/ci-conformance.sh
+          read -r wall_seconds peak_rss_kib < evidence/runtime.txt
+          wall_ms="$(awk -v seconds="$wall_seconds" 'BEGIN { printf "%d", seconds * 1000 }')"
+          jq --argjson wall_ms "$wall_ms" --argjson peak_rss_kib "$peak_rss_kib" '.wall_ms = $wall_ms | .peak_rss_kib = $peak_rss_kib' evidence/inventory.json > evidence/inventory.with-runtime.json
+          mv evidence/inventory.with-runtime.json evidence/inventory.json
+          jq --argjson wall_ms "$wall_ms" --argjson peak_rss_kib "$peak_rss_kib" '.inventory.wall_ms = $wall_ms | .inventory.peak_rss_kib = $peak_rss_kib | .runtime = {wall_ms:$wall_ms, peak_rss_kib:$peak_rss_kib}' evidence/conformance.json > evidence/conformance.with-runtime.json
+          mv evidence/conformance.with-runtime.json evidence/conformance.json
+          jq -e '.inventory.wall_ms >= 0 and .inventory.peak_rss_kib > 0 and (.vectors | length) == 12' evidence/conformance.json
+
+      - name: Upload immutable conformance evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: gooo-conformance
+          path: evidence
+          if-no-files-found: error
+          retention-days: 90
+
+  actionlint:
+    name: actionlint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the pull request
+        uses: actions/checkout@v4
+      - name: Lint workflows
+        run: docker run --rm -v "$GITHUB_WORKSPACE:/repo" -w /repo rhysd/actionlint:latest -color

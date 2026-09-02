@@ -1,0 +1,118 @@
+{
+  "schema": "gooo.corpus/v1",
+  "authority": "github.com/kimjooyoon/gooo-self-hosted-semantic-kernel/.gooo/corpus.gooo",
+  "version": "0.1.0",
+  "entity_counts": {
+    "cells": 12,
+    "meta_activities": 12,
+    "proof_choices": 12,
+    "indicators": 12,
+    "cases": 12
+  },
+  "cells": [
+    {"semantic_id":"cell-01","edge_id":"cell-edge-01","case_id":"case-01-closed-value","kind":"evaluation","meaning":"typed integer closure"},
+    {"semantic_id":"cell-02","edge_id":"cell-edge-02","case_id":"case-02-closed-effect","kind":"evaluation","meaning":"ordered effect closure"},
+    {"semantic_id":"cell-03","edge_id":"cell-edge-03","case_id":"case-03-closed-fixed-point","kind":"evaluation","meaning":"stable FIXED_POINT closure"},
+    {"semantic_id":"cell-04","edge_id":"cell-edge-04","case_id":"case-04-closed-external","kind":"evaluation","meaning":"provided external closure"},
+    {"semantic_id":"cell-05","edge_id":"cell-edge-05","case_id":"case-05-unknown-external","kind":"evaluation","meaning":"undetermined external value"},
+    {"semantic_id":"cell-06","edge_id":"cell-edge-06","case_id":"case-06-unknown-top-decision","kind":"decision","meaning":"unknown top decision fails closed"},
+    {"semantic_id":"cell-07","edge_id":"cell-edge-07","case_id":"case-07-unknown-fixed-point","kind":"evaluation","meaning":"unresolved bounded FIXED_POINT"},
+    {"semantic_id":"cell-08","edge_id":"cell-edge-08","case_id":"case-08-unknown-effect-grant","kind":"evaluation","meaning":"missing effect capability"},
+    {"semantic_id":"cell-09","edge_id":"cell-edge-09","case_id":"case-09-refuted-type","kind":"evaluation","meaning":"effect argument type contradiction"},
+    {"semantic_id":"cell-10","edge_id":"cell-edge-10","case_id":"case-10-refuted-operation","kind":"evaluation","meaning":"explicit unsupported operation contradiction"},
+    {"semantic_id":"cell-11","edge_id":"cell-edge-11","case_id":"case-11-refuted-fixed-point-cycle","kind":"evaluation","meaning":"FIXED_POINT cycle contradiction"},
+    {"semantic_id":"cell-12","edge_id":"cell-edge-12","case_id":"case-12-refuted-precedence","kind":"decision","meaning":"REFUTED dominates UNKNOWN"}
+  ],
+  "meta_activities": [
+    {"semantic_id":"activity-01","edge_id":"activity-edge-01","case_id":"case-01-closed-value","action":"observe","meaning":"observe typed value"},
+    {"semantic_id":"activity-02","edge_id":"activity-edge-02","case_id":"case-02-closed-effect","action":"trace","meaning":"observe ordered trace"},
+    {"semantic_id":"activity-03","edge_id":"activity-edge-03","case_id":"case-03-closed-fixed-point","action":"stabilize","meaning":"observe stable state"},
+    {"semantic_id":"activity-04","edge_id":"activity-edge-04","case_id":"case-04-closed-external","action":"resolve","meaning":"resolve provided external"},
+    {"semantic_id":"activity-05","edge_id":"activity-edge-05","case_id":"case-05-unknown-external","action":"resolve","meaning":"attempt external resolution"},
+    {"semantic_id":"activity-06","edge_id":"activity-edge-06","case_id":"case-06-unknown-top-decision","action":"decide","meaning":"attempt top decision"},
+    {"semantic_id":"activity-07","edge_id":"activity-edge-07","case_id":"case-07-unknown-fixed-point","action":"stabilize","meaning":"attempt bounded stabilization"},
+    {"semantic_id":"activity-08","edge_id":"activity-edge-08","case_id":"case-08-unknown-effect-grant","action":"authorize","meaning":"attempt effect authorization"},
+    {"semantic_id":"activity-09","edge_id":"activity-edge-09","case_id":"case-09-refuted-type","action":"type-check","meaning":"check effect type"},
+    {"semantic_id":"activity-10","edge_id":"activity-edge-10","case_id":"case-10-refuted-operation","action":"interpret","meaning":"interpret declared operation"},
+    {"semantic_id":"activity-11","edge_id":"activity-edge-11","case_id":"case-11-refuted-fixed-point-cycle","action":"stabilize","meaning":"detect fixed-point cycle"},
+    {"semantic_id":"activity-12","edge_id":"activity-edge-12","case_id":"case-12-refuted-precedence","action":"decide","meaning":"apply decision precedence"}
+  ],
+  "proof_choices": [
+    {"semantic_id":"proof-01","edge_id":"proof-edge-01","case_id":"case-01-closed-value","status":"CLOSED","choice":"typed-value"},
+    {"semantic_id":"proof-02","edge_id":"proof-edge-02","case_id":"case-02-closed-effect","status":"CLOSED","choice":"ordered-trace"},
+    {"semantic_id":"proof-03","edge_id":"proof-edge-03","case_id":"case-03-closed-fixed-point","status":"CLOSED","choice":"stable-state"},
+    {"semantic_id":"proof-04","edge_id":"proof-edge-04","case_id":"case-04-closed-external","status":"CLOSED","choice":"provided-input"},
+    {"semantic_id":"proof-05","edge_id":"proof-edge-05","case_id":"case-05-unknown-external","status":"UNKNOWN","choice":"missing-input"},
+    {"semantic_id":"proof-06","edge_id":"proof-edge-06","case_id":"case-06-unknown-top-decision","status":"UNKNOWN","choice":"unknown-decision"},
+    {"semantic_id":"proof-07","edge_id":"proof-edge-07","case_id":"case-07-unknown-fixed-point","status":"UNKNOWN","choice":"unresolved-state"},
+    {"semantic_id":"proof-08","edge_id":"proof-edge-08","case_id":"case-08-unknown-effect-grant","status":"UNKNOWN","choice":"missing-grant"},
+    {"semantic_id":"proof-09","edge_id":"proof-edge-09","case_id":"case-09-refuted-type","status":"REFUTED","choice":"type-contradiction"},
+    {"semantic_id":"proof-10","edge_id":"proof-edge-10","case_id":"case-10-refuted-operation","status":"REFUTED","choice":"unsupported-operation"},
+    {"semantic_id":"proof-11","edge_id":"proof-edge-11","case_id":"case-11-refuted-fixed-point-cycle","status":"REFUTED","choice":"cycle-contradiction"},
+    {"semantic_id":"proof-12","edge_id":"proof-edge-12","case_id":"case-12-refuted-precedence","status":"REFUTED","choice":"precedence-contradiction"}
+  ],
+  "indicators": [
+    {"semantic_id":"indicator-01","edge_id":"indicator-edge-01","case_id":"case-01-closed-value","status":"CLOSED","name":"typed-value-present"},
+    {"semantic_id":"indicator-02","edge_id":"indicator-edge-02","case_id":"case-02-closed-effect","status":"CLOSED","name":"trace-ordered"},
+    {"semantic_id":"indicator-03","edge_id":"indicator-edge-03","case_id":"case-03-closed-fixed-point","status":"CLOSED","name":"state-stable"},
+    {"semantic_id":"indicator-04","edge_id":"indicator-edge-04","case_id":"case-04-closed-external","status":"CLOSED","name":"external-present"},
+    {"semantic_id":"indicator-05","edge_id":"indicator-edge-05","case_id":"case-05-unknown-external","status":"UNKNOWN","name":"external-missing"},
+    {"semantic_id":"indicator-06","edge_id":"indicator-edge-06","case_id":"case-06-unknown-top-decision","status":"UNKNOWN","name":"top-decision-unknown"},
+    {"semantic_id":"indicator-07","edge_id":"indicator-edge-07","case_id":"case-07-unknown-fixed-point","status":"UNKNOWN","name":"fixed-point-unresolved"},
+    {"semantic_id":"indicator-08","edge_id":"indicator-edge-08","case_id":"case-08-unknown-effect-grant","status":"UNKNOWN","name":"grant-missing"},
+    {"semantic_id":"indicator-09","edge_id":"indicator-edge-09","case_id":"case-09-refuted-type","status":"REFUTED","name":"type-invalid"},
+    {"semantic_id":"indicator-10","edge_id":"indicator-edge-10","case_id":"case-10-refuted-operation","status":"REFUTED","name":"operation-invalid"},
+    {"semantic_id":"indicator-11","edge_id":"indicator-edge-11","case_id":"case-11-refuted-fixed-point-cycle","status":"REFUTED","name":"fixed-point-cycle"},
+    {"semantic_id":"indicator-12","edge_id":"indicator-edge-12","case_id":"case-12-refuted-precedence","status":"REFUTED","name":"refuted-dominates"}
+  ],
+  "cases": [
+    {
+      "case_id":"case-01-closed-value","semantic_id":"case-semantic-01","edge_id":"case-edge-01","cell_id":"cell-01","meta_activity_id":"activity-01","proof_choice_id":"proof-01","indicator_id":"indicator-01","expected_status":"CLOSED",
+      "program":[{"op":"RETURN_INT","int":42}]
+    },
+    {
+      "case_id":"case-02-closed-effect","semantic_id":"case-semantic-02","edge_id":"case-edge-02","cell_id":"cell-02","meta_activity_id":"activity-02","proof_choice_id":"proof-02","indicator_id":"indicator-02","expected_status":"CLOSED",
+      "grants":["emit"],"program":[{"op":"EFFECT_INT","effect":"emit","int":7},{"op":"RETURN_INT","int":7}]
+    },
+    {
+      "case_id":"case-03-closed-fixed-point","semantic_id":"case-semantic-03","edge_id":"case-edge-03","cell_id":"cell-03","meta_activity_id":"activity-03","proof_choice_id":"proof-03","indicator_id":"indicator-03","expected_status":"CLOSED",
+      "program":[{"op":"FIXED_POINT","rule":"FIXED_POINT","prior_state":"state-a","next_state":"state-a","observed_states":["state-a"],"max_steps":3}]
+    },
+    {
+      "case_id":"case-04-closed-external","semantic_id":"case-semantic-04","edge_id":"case-edge-04","cell_id":"cell-04","meta_activity_id":"activity-04","proof_choice_id":"proof-04","indicator_id":"indicator-04","expected_status":"CLOSED",
+      "externals":{"feature.enabled":{"type":"bool","bool":true}},"program":[{"op":"EXTERNAL_BOOL","name":"feature.enabled"}]
+    },
+    {
+      "case_id":"case-05-unknown-external","semantic_id":"case-semantic-05","edge_id":"case-edge-05","cell_id":"cell-05","meta_activity_id":"activity-05","proof_choice_id":"proof-05","indicator_id":"indicator-05","expected_status":"UNKNOWN",
+      "program":[{"op":"EXTERNAL_INT","name":"quota.limit","unknown_key":"external_value"}]
+    },
+    {
+      "case_id":"case-06-unknown-top-decision","semantic_id":"case-semantic-06","edge_id":"case-edge-06","cell_id":"cell-06","meta_activity_id":"activity-06","proof_choice_id":"proof-06","indicator_id":"indicator-06","expected_status":"UNKNOWN",
+      "program":[{"op":"EXTERNAL_BOOL","name":"decision.enabled","unknown_key":"top_decision"},{"op":"RETURN_BOOL","bool":false}]
+    },
+    {
+      "case_id":"case-07-unknown-fixed-point","semantic_id":"case-semantic-07","edge_id":"case-edge-07","cell_id":"cell-07","meta_activity_id":"activity-07","proof_choice_id":"proof-07","indicator_id":"indicator-07","expected_status":"UNKNOWN",
+      "program":[{"op":"FIXED_POINT","rule":"FIXED_POINT","prior_state":"state-a","next_state":"state-b","observed_states":["state-a","state-b"],"max_steps":3}]
+    },
+    {
+      "case_id":"case-08-unknown-effect-grant","semantic_id":"case-semantic-08","edge_id":"case-edge-08","cell_id":"cell-08","meta_activity_id":"activity-08","proof_choice_id":"proof-08","indicator_id":"indicator-08","expected_status":"UNKNOWN",
+      "program":[{"op":"EFFECT_INT","effect":"emit","int":9},{"op":"RETURN_INT","int":9}]
+    },
+    {
+      "case_id":"case-09-refuted-type","semantic_id":"case-semantic-09","edge_id":"case-edge-09","cell_id":"cell-09","meta_activity_id":"activity-09","proof_choice_id":"proof-09","indicator_id":"indicator-09","expected_status":"REFUTED",
+      "grants":["emit"],"program":[{"op":"EFFECT_BOOL","effect":"emit","bool":true},{"op":"RETURN_INT","int":0}]
+    },
+    {
+      "case_id":"case-10-refuted-operation","semantic_id":"case-semantic-10","edge_id":"case-edge-10","cell_id":"cell-10","meta_activity_id":"activity-10","proof_choice_id":"proof-10","indicator_id":"indicator-10","expected_status":"REFUTED",
+      "program":[{"op":"REFUTE","reason":"declared operation contradicts the minimum semantic schema"}]
+    },
+    {
+      "case_id":"case-11-refuted-fixed-point-cycle","semantic_id":"case-semantic-11","edge_id":"case-edge-11","cell_id":"cell-11","meta_activity_id":"activity-11","proof_choice_id":"proof-11","indicator_id":"indicator-11","expected_status":"REFUTED",
+      "program":[{"op":"FIXED_POINT","rule":"FIXED_POINT","prior_state":"state-a","next_state":"state-b","observed_states":["state-a","state-b","state-a"],"max_steps":2,"cycle_detected":true}]
+    },
+    {
+      "case_id":"case-12-refuted-precedence","semantic_id":"case-semantic-12","edge_id":"case-edge-12","cell_id":"cell-12","meta_activity_id":"activity-12","proof_choice_id":"proof-12","indicator_id":"indicator-12","expected_status":"REFUTED",
+      "program":[{"op":"EXTERNAL_INT","name":"unresolved.input","unknown_key":"external_value"},{"op":"REFUTE","reason":"REFUTED observation dominates UNKNOWN at the top decision"}]
+    }
+  ]
+}
