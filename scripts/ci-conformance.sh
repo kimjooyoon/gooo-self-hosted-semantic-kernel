@@ -64,8 +64,11 @@ while IFS= read -r case_id; do
 	fi
 done < "$evidence_dir/case-ids.txt"
 
-go run ./cmd/gooo compare --schema "$schema_path" --corpus "$corpus_path" --case-id case-02-closed-effect --expected REFUTED --reference fixtures/counterexamples/reference.json --candidate fixtures/counterexamples/candidate.json --output "$evidence_dir/counterexample.json"
-jq -e '.verdict == "REFUTED" and .matched == false and .ordered_effect_trace_equal == false and .terminal_digest_equal == false' "$evidence_dir/counterexample.json"
+counterexample_raw="$evidence_dir/.counterexample.raw.json"
+go run ./cmd/gooo compare --schema "$schema_path" --corpus "$corpus_path" --case-id case-02-closed-effect --expected REFUTED --reference fixtures/counterexamples/reference.json --candidate fixtures/counterexamples/candidate.json --output "$counterexample_raw"
+jq '(.comparison_kind = "NEGATIVE_COUNTEREXAMPLE") | (.comparison_id = ("negative-counterexample/" + .case_id)) | (.corpus_case_id = .case_id) | del(.case_id)' "$counterexample_raw" > "$evidence_dir/counterexample.json"
+rm -f "$counterexample_raw"
+jq -e '.comparison_kind == "NEGATIVE_COUNTEREXAMPLE" and .comparison_id == "negative-counterexample/case-02-closed-effect" and .corpus_case_id == "case-02-closed-effect" and .verdict == "REFUTED" and .matched == false and .ordered_effect_trace_equal == false and .terminal_digest_equal == false' "$evidence_dir/counterexample.json"
 
 jq -s '[.[] | {case_id, expected_status, verdict, matched, byte_equal, reference_bytes_digest, candidate_bytes_digest, semantic_identity_equal, typed_value_equal, ordered_effect_trace_equal, terminal_digest_equal, reference_terminal_digest_valid, candidate_terminal_digest_valid, reference_status, candidate_status}]' "$evidence_dir/comparisons"/*.json > "$evidence_dir/vectors.json"
 "$repo_root/scripts/inventory.sh" "$evidence_dir/inventory.json"
@@ -99,4 +102,4 @@ jq -n \
 	--slurpfile inventory "$evidence_dir/inventory.json" \
 	'{schema:"gooo.conformance/v1", authority:$authority, status:"CLOSED", repository:$repository, commit:$commit, ref:$ref, event:$event, pull_request:{number:$pr_number, merge_commit:$merge_commit}, run:{id:$run_id, attempt:$run_attempt, workflow:$workflow, job:$job}, artifact:{name:"gooo-conformance", path:"evidence/"}, validation:$validation[0], corpus_summary:$summary[0], vectors:$vectors[0], counterexample:$counterexample[0], inventory:$inventory[0], claims:{bounded_self_hosting:{status:"CLOSED", scope:"schema to generated evaluator to frozen oracle over fixed 12-case corpus"}, improvement:{status:"UNKNOWN", reason:"no before/after artifacts with the same digest identities"}, external_utility:{status:"UNKNOWN", reason:"outside the bounded corpus is not measured"}}}' > "$evidence_dir/conformance.json"
 
-jq -e '.status == "CLOSED" and .claims.improvement.status == "UNKNOWN" and .claims.external_utility.status == "UNKNOWN" and (.vectors | length == 12) and .counterexample.verdict == "REFUTED"' "$evidence_dir/conformance.json"
+jq -e '.status == "CLOSED" and .claims.improvement.status == "UNKNOWN" and .claims.external_utility.status == "UNKNOWN" and (.vectors | length == 12) and .counterexample.comparison_kind == "NEGATIVE_COUNTEREXAMPLE" and .counterexample.comparison_id == "negative-counterexample/case-02-closed-effect" and .counterexample.verdict == "REFUTED"' "$evidence_dir/conformance.json"
