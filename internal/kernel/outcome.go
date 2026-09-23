@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"os"
 	"strings"
 )
@@ -68,6 +69,13 @@ func ReadOutcome(path string) (Outcome, []byte, error) {
 	var outcome Outcome
 	if err := decoder.Decode(&outcome); err != nil {
 		return Outcome{}, nil, fmt.Errorf("parse outcome %s: %w", path, err)
+	}
+	var extra any
+	if err := decoder.Decode(&extra); err != io.EOF {
+		if err == nil {
+			return Outcome{}, nil, fmt.Errorf("parse outcome %s: trailing JSON value", path)
+		}
+		return Outcome{}, nil, fmt.Errorf("parse outcome %s: trailing data: %w", path, err)
 	}
 	if outcome.Schema != "gooo.evaluation/v1" || outcome.CaseID == "" || !statusSet[outcome.Status] || outcome.SemanticID == "" || outcome.EdgeID == "" || outcome.SemanticSchemaDigest == "" || outcome.CorpusDigest == "" || outcome.TerminalDigest == "" {
 		return Outcome{}, nil, fmt.Errorf("outcome %s has an incomplete identity or status", path)
