@@ -283,16 +283,16 @@ func validateProgram(schema SemanticSchema, c CaseSpec) error {
 		}
 		switch step.Op {
 		case "RETURN_INT":
-			if step.Int == nil {
-				return fmt.Errorf("program step %d RETURN_INT needs int", index)
+			if step.Int == nil || step.Bool != nil || step.String != "" {
+				return fmt.Errorf("program step %d RETURN_INT must contain only int", index)
 			}
 		case "RETURN_BOOL":
-			if step.Bool == nil {
-				return fmt.Errorf("program step %d RETURN_BOOL needs bool", index)
+			if step.Bool == nil || step.Int != nil || step.String != "" {
+				return fmt.Errorf("program step %d RETURN_BOOL must contain only bool", index)
 			}
 		case "RETURN_STRING":
-			if step.String == "" {
-				return fmt.Errorf("program step %d RETURN_STRING needs string", index)
+			if step.String == "" || step.Int != nil || step.Bool != nil {
+				return fmt.Errorf("program step %d RETURN_STRING must contain only string", index)
 			}
 		case "EXTERNAL_INT", "EXTERNAL_BOOL":
 			if step.Name == "" {
@@ -304,12 +304,12 @@ func validateProgram(schema SemanticSchema, c CaseSpec) error {
 				}
 			}
 		case "EFFECT_INT":
-			if step.Effect == "" || step.Int == nil {
-				return fmt.Errorf("program step %d EFFECT_INT needs effect and int", index)
+			if step.Effect == "" || step.Int == nil || step.Bool != nil || step.String != "" {
+				return fmt.Errorf("program step %d EFFECT_INT must contain effect and only int", index)
 			}
 		case "EFFECT_BOOL":
-			if step.Effect == "" || step.Bool == nil {
-				return fmt.Errorf("program step %d EFFECT_BOOL needs effect and bool", index)
+			if step.Effect == "" || step.Bool == nil || step.Int != nil || step.String != "" {
+				return fmt.Errorf("program step %d EFFECT_BOOL must contain effect and only bool", index)
 			}
 		case "FIXED_POINT":
 			if step.Rule == "" || step.PriorState == "" || step.NextState == "" || len(step.ObservedStates) == 0 || step.MaxSteps <= 0 {
