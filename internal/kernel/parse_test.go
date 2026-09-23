@@ -1,6 +1,9 @@
 package kernel
 
-import "testing"
+import (
+	"strings"
+	"testing"
+)
 
 func TestFrozenCorpusShape(t *testing.T) {
 	schema, _, err := LoadSchema("../../.gooo/semantic.gooo")
@@ -29,7 +32,7 @@ func TestDecisionPrecedence(t *testing.T) {
 	}
 }
 
-func TestValidateCorpusRejectsCaseIDReuseAcrossEntities(t *testing.T) {
+func TestValidateCorpusRejectsCaseIDReuseWithinEntityKind(t *testing.T) {
 	schema, _, err := LoadSchema("../../.gooo/semantic.gooo")
 	if err != nil {
 		t.Fatal(err)
@@ -38,9 +41,9 @@ func TestValidateCorpusRejectsCaseIDReuseAcrossEntities(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	corpus.MetaActivities[0].CaseID = corpus.Cells[0].CaseID
+	corpus.MetaActivities[1].CaseID = corpus.MetaActivities[0].CaseID
 
-	if err := ValidateCorpus(schema, corpus); err == nil {
-		t.Fatal("expected duplicate case_id to be rejected")
+	if err := ValidateCorpus(schema, corpus); err == nil || !strings.Contains(err.Error(), "case_id") {
+		t.Fatalf("expected duplicate case_id to be rejected, got %v", err)
 	}
 }

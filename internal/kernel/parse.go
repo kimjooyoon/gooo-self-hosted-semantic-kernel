@@ -171,12 +171,15 @@ func ValidateCorpus(schema SemanticSchema, corpus Corpus) error {
 	semanticIDs := map[string]string{}
 	edgeIDs := map[string]string{}
 	caseIDs := map[string]bool{}
-	caseOwners := map[string]string{}
+	cellCaseOwners := map[string]string{}
+	activityCaseOwners := map[string]string{}
+	proofChoiceCaseOwners := map[string]string{}
+	indicatorCaseOwners := map[string]string{}
 	for index, cell := range corpus.Cells {
 		if err := addIdentity(semanticIDs, edgeIDs, "cell", index, cell.SemanticID, cell.EdgeID); err != nil {
 			return err
 		}
-		if err := addCaseOwner(caseOwners, "cell", index, cell.CaseID); err != nil {
+		if err := addCaseOwner(cellCaseOwners, "cell", index, cell.CaseID); err != nil {
 			return err
 		}
 		if cell.CaseID == "" || cell.Kind == "" || cell.Meaning == "" {
@@ -187,7 +190,7 @@ func ValidateCorpus(schema SemanticSchema, corpus Corpus) error {
 		if err := addIdentity(semanticIDs, edgeIDs, "meta_activity", index, activity.SemanticID, activity.EdgeID); err != nil {
 			return err
 		}
-		if err := addCaseOwner(caseOwners, "meta_activity", index, activity.CaseID); err != nil {
+		if err := addCaseOwner(activityCaseOwners, "meta_activity", index, activity.CaseID); err != nil {
 			return err
 		}
 		if activity.CaseID == "" || activity.Action == "" || activity.Meaning == "" {
@@ -198,7 +201,7 @@ func ValidateCorpus(schema SemanticSchema, corpus Corpus) error {
 		if err := addIdentity(semanticIDs, edgeIDs, "proof_choice", index, choice.SemanticID, choice.EdgeID); err != nil {
 			return err
 		}
-		if err := addCaseOwner(caseOwners, "proof_choice", index, choice.CaseID); err != nil {
+		if err := addCaseOwner(proofChoiceCaseOwners, "proof_choice", index, choice.CaseID); err != nil {
 			return err
 		}
 		if choice.CaseID == "" || !statusSet[choice.Status] || choice.Choice == "" {
@@ -209,7 +212,7 @@ func ValidateCorpus(schema SemanticSchema, corpus Corpus) error {
 		if err := addIdentity(semanticIDs, edgeIDs, "indicator", index, indicator.SemanticID, indicator.EdgeID); err != nil {
 			return err
 		}
-		if err := addCaseOwner(caseOwners, "indicator", index, indicator.CaseID); err != nil {
+		if err := addCaseOwner(indicatorCaseOwners, "indicator", index, indicator.CaseID); err != nil {
 			return err
 		}
 		if indicator.CaseID == "" || !statusSet[indicator.Status] || indicator.Name == "" {
@@ -234,9 +237,6 @@ func ValidateCorpus(schema SemanticSchema, corpus Corpus) error {
 	}
 	for index, c := range corpus.Cases {
 		if err := addIdentity(semanticIDs, edgeIDs, "case", index, c.SemanticID, c.EdgeID); err != nil {
-			return err
-		}
-		if err := addCaseOwner(caseOwners, "case", index, c.CaseID); err != nil {
 			return err
 		}
 		if c.CaseID == "" || caseIDs[c.CaseID] || !statusSet[c.ExpectedStatus] || len(c.Program) == 0 {
