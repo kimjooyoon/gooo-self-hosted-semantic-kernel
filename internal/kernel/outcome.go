@@ -80,6 +80,9 @@ func ReadOutcome(path string) (Outcome, []byte, error) {
 	if outcome.Status == StatusClosed && outcome.TypedValue == nil {
 		return Outcome{}, nil, fmt.Errorf("outcome %s CLOSED has no typed value", path)
 	}
+	if outcome.Status == StatusRefuted && (outcome.TypedValue != nil || outcome.Unknown != nil) {
+		return Outcome{}, nil, fmt.Errorf("outcome %s REFUTED must not carry a typed value or UNKNOWN record", path)
+	}
 	if outcome.TypedValue != nil {
 		if err := outcome.TypedValue.Validate(); err != nil {
 			return Outcome{}, nil, fmt.Errorf("outcome %s: %w", path, err)
