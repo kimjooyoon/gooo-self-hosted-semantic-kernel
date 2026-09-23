@@ -171,8 +171,12 @@ func ValidateCorpus(schema SemanticSchema, corpus Corpus) error {
 	semanticIDs := map[string]string{}
 	edgeIDs := map[string]string{}
 	caseIDs := map[string]bool{}
+	caseOwners := map[string]string{}
 	for index, cell := range corpus.Cells {
 		if err := addIdentity(semanticIDs, edgeIDs, "cell", index, cell.SemanticID, cell.EdgeID); err != nil {
+			return err
+		}
+		if err := addCaseOwner(caseOwners, "cell", index, cell.CaseID); err != nil {
 			return err
 		}
 		if cell.CaseID == "" || cell.Kind == "" || cell.Meaning == "" {
@@ -183,6 +187,9 @@ func ValidateCorpus(schema SemanticSchema, corpus Corpus) error {
 		if err := addIdentity(semanticIDs, edgeIDs, "meta_activity", index, activity.SemanticID, activity.EdgeID); err != nil {
 			return err
 		}
+		if err := addCaseOwner(caseOwners, "meta_activity", index, activity.CaseID); err != nil {
+			return err
+		}
 		if activity.CaseID == "" || activity.Action == "" || activity.Meaning == "" {
 			return fmt.Errorf("meta activity %d is incomplete", index)
 		}
@@ -191,12 +198,18 @@ func ValidateCorpus(schema SemanticSchema, corpus Corpus) error {
 		if err := addIdentity(semanticIDs, edgeIDs, "proof_choice", index, choice.SemanticID, choice.EdgeID); err != nil {
 			return err
 		}
+		if err := addCaseOwner(caseOwners, "proof_choice", index, choice.CaseID); err != nil {
+			return err
+		}
 		if choice.CaseID == "" || !statusSet[choice.Status] || choice.Choice == "" {
 			return fmt.Errorf("proof choice %d is incomplete", index)
 		}
 	}
 	for index, indicator := range corpus.Indicators {
 		if err := addIdentity(semanticIDs, edgeIDs, "indicator", index, indicator.SemanticID, indicator.EdgeID); err != nil {
+			return err
+		}
+		if err := addCaseOwner(caseOwners, "indicator", index, indicator.CaseID); err != nil {
 			return err
 		}
 		if indicator.CaseID == "" || !statusSet[indicator.Status] || indicator.Name == "" {
@@ -221,6 +234,9 @@ func ValidateCorpus(schema SemanticSchema, corpus Corpus) error {
 	}
 	for index, c := range corpus.Cases {
 		if err := addIdentity(semanticIDs, edgeIDs, "case", index, c.SemanticID, c.EdgeID); err != nil {
+			return err
+		}
+		if err := addCaseOwner(caseOwners, "case", index, c.CaseID); err != nil {
 			return err
 		}
 		if c.CaseID == "" || caseIDs[c.CaseID] || !statusSet[c.ExpectedStatus] || len(c.Program) == 0 {
@@ -258,6 +274,18 @@ func ValidateCorpus(schema SemanticSchema, corpus Corpus) error {
 			return err
 		}
 	}
+	return nil
+}
+
+func addCaseOwner(caseOwners map[string]string, kind string, index int, caseID string) error {
+	if caseID == "" {
+		return fmt.Errorf("%s %d has empty case_id", kind, index)
+	}
+	owner := fmt.Sprintf("%s %d", kind, index)
+	if previous, exists := caseOwners[caseID]; exists {
+		return fmt.Errorf("case_id %q is duplicated by %s and %s", caseID, previous, owner)
+	}
+	caseOwners[caseID] = owner
 	return nil
 }
 
