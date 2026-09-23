@@ -72,13 +72,19 @@ func ReadOutcome(path string) (Outcome, []byte, error) {
 	if outcome.Schema != "gooo.evaluation/v1" || outcome.CaseID == "" || !statusSet[outcome.Status] || outcome.SemanticID == "" || outcome.EdgeID == "" || outcome.SemanticSchemaDigest == "" || outcome.CorpusDigest == "" || outcome.TerminalDigest == "" {
 		return Outcome{}, nil, fmt.Errorf("outcome %s has an incomplete identity or status", path)
 	}
-	if outcome.Status == StatusUnknown {
+	switch outcome.Status {
+	case StatusUnknown:
 		if outcome.Unknown == nil || outcome.Unknown.Validate() != nil || outcome.TypedValue != nil {
 			return Outcome{}, nil, fmt.Errorf("outcome %s UNKNOWN is not fail-closed", path)
 		}
-	}
-	if outcome.Status == StatusClosed && outcome.TypedValue == nil {
-		return Outcome{}, nil, fmt.Errorf("outcome %s CLOSED has no typed value", path)
+	case StatusClosed:
+		if outcome.TypedValue == nil || outcome.Unknown != nil {
+			return Outcome{}, nil, fmt.Errorf("outcome %s CLOSED payload is not canonical", path)
+		}
+	case StatusRefuted:
+		if outcome.TypedValue != nil || outcome.Unknown != nil {
+			return Outcome{}, nil, fmt.Errorf("outcome %s REFUTED payload is not canonical", path)
+		}
 	}
 	if outcome.TypedValue != nil {
 		if err := outcome.TypedValue.Validate(); err != nil {
