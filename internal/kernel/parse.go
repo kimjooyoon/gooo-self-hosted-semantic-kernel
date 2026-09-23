@@ -171,37 +171,45 @@ func ValidateCorpus(schema SemanticSchema, corpus Corpus) error {
 	semanticIDs := map[string]string{}
 	edgeIDs := map[string]string{}
 	caseIDs := map[string]bool{}
+	cellCaseIDs := map[string]bool{}
+	activityCaseIDs := map[string]bool{}
+	proofCaseIDs := map[string]bool{}
+	indicatorCaseIDs := map[string]bool{}
 	for index, cell := range corpus.Cells {
 		if err := addIdentity(semanticIDs, edgeIDs, "cell", index, cell.SemanticID, cell.EdgeID); err != nil {
 			return err
 		}
-		if cell.CaseID == "" || cell.Kind == "" || cell.Meaning == "" {
+		if cell.CaseID == "" || cellCaseIDs[cell.CaseID] || cell.Kind == "" || cell.Meaning == "" {
 			return fmt.Errorf("cell %d is incomplete", index)
 		}
+		cellCaseIDs[cell.CaseID] = true
 	}
 	for index, activity := range corpus.MetaActivities {
 		if err := addIdentity(semanticIDs, edgeIDs, "meta_activity", index, activity.SemanticID, activity.EdgeID); err != nil {
 			return err
 		}
-		if activity.CaseID == "" || activity.Action == "" || activity.Meaning == "" {
+		if activity.CaseID == "" || activityCaseIDs[activity.CaseID] || activity.Action == "" || activity.Meaning == "" {
 			return fmt.Errorf("meta activity %d is incomplete", index)
 		}
+		activityCaseIDs[activity.CaseID] = true
 	}
 	for index, choice := range corpus.ProofChoices {
 		if err := addIdentity(semanticIDs, edgeIDs, "proof_choice", index, choice.SemanticID, choice.EdgeID); err != nil {
 			return err
 		}
-		if choice.CaseID == "" || !statusSet[choice.Status] || choice.Choice == "" {
+		if choice.CaseID == "" || proofCaseIDs[choice.CaseID] || !statusSet[choice.Status] || choice.Choice == "" {
 			return fmt.Errorf("proof choice %d is incomplete", index)
 		}
+		proofCaseIDs[choice.CaseID] = true
 	}
 	for index, indicator := range corpus.Indicators {
 		if err := addIdentity(semanticIDs, edgeIDs, "indicator", index, indicator.SemanticID, indicator.EdgeID); err != nil {
 			return err
 		}
-		if indicator.CaseID == "" || !statusSet[indicator.Status] || indicator.Name == "" {
+		if indicator.CaseID == "" || indicatorCaseIDs[indicator.CaseID] || !statusSet[indicator.Status] || indicator.Name == "" {
 			return fmt.Errorf("indicator %d is incomplete", index)
 		}
+		indicatorCaseIDs[indicator.CaseID] = true
 	}
 	cellByCase := map[string]Cell{}
 	activityByCase := map[string]MetaActivity{}

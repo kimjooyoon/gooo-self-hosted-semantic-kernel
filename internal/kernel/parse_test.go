@@ -28,3 +28,18 @@ func TestDecisionPrecedence(t *testing.T) {
 		t.Fatalf("dominant status = %s, want REFUTED", got)
 	}
 }
+
+func TestValidateCorpusRejectsDuplicateTypedCaseLinks(t *testing.T) {
+	schema, _, err := LoadSchema("../../.gooo/semantic.gooo")
+	if err != nil {
+		t.Fatal(err)
+	}
+	corpus, _, err := LoadCorpus("../../.gooo/corpus.gooo")
+	if err != nil {
+		t.Fatal(err)
+	}
+	corpus.Cells[1].CaseID = corpus.Cells[0].CaseID
+	if err := ValidateCorpus(schema, corpus); err == nil {
+		t.Fatal("expected duplicate cell case_id to be rejected")
+	}
+}
