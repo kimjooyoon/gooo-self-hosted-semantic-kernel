@@ -1,6 +1,9 @@
 package kernel
 
-import "errors"
+import (
+	"errors"
+	"strings"
+)
 
 type Status string
 
@@ -39,7 +42,7 @@ type Unknown struct {
 }
 
 func (u Unknown) Validate() error {
-	if u.Stage == "" || u.Step == "" || u.Reason == "" || u.UnknownClass == "" || u.NextOperation == "" || u.BlockedBy == "" {
+	if u.Stage == "" || u.Step == "" || u.Reason == "" || u.UnknownClass == "" || u.NextOperation == "" || strings.TrimSpace(u.BlockedBy) == "" {
 		return errors.New("UNKNOWN requires stage, step, reason, unknown_class, next_operation, and blocked_by")
 	}
 	return nil

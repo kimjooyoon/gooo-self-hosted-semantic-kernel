@@ -28,3 +28,17 @@ func TestDecisionPrecedence(t *testing.T) {
 		t.Fatalf("dominant status = %s, want REFUTED", got)
 	}
 }
+
+func TestUnknownRejectsWhitespaceBlocker(t *testing.T) {
+	unknown := Unknown{
+		Stage:         "STAGE",
+		Step:          "STEP",
+		Reason:        "REASON",
+		UnknownClass:  "CLASS",
+		NextOperation: "NEXT",
+		BlockedBy:     "   ",
+	}
+	if err := unknown.Validate(); err == nil {
+		t.Fatal("UNKNOWN accepted a whitespace-only blocker")
+	}
+}
