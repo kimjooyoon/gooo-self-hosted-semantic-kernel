@@ -25,6 +25,21 @@ func TestDecisionPrecedence(t *testing.T) {
 		t.Fatalf("dominant status = %s, want UNKNOWN", got)
 	}
 	if got := DominantStatus(precedence, []Status{StatusClosed, StatusUnknown, StatusRefuted}); got != StatusRefuted {
-		t.Fatalf("dominant status = %s, want REFUTED", got)
+		 t.Fatalf("dominant status = %s, want REFUTED", got)
+	}
+}
+
+func TestValidateCorpusRejectsDuplicateAuxiliaryCaseID(t *testing.T) {
+	schema, _, err := LoadSchema("../../.gooo/semantic.gooo")
+	if err != nil {
+		t.Fatal(err)
+	}
+	corpus, _, err := LoadCorpus("../../.gooo/corpus.gooo")
+	if err != nil {
+		t.Fatal(err)
+	}
+	corpus.Cells[1].CaseID = corpus.Cells[0].CaseID
+	if err := ValidateCorpus(schema, corpus); err == nil {
+		t.Fatal("duplicate auxiliary case_id was accepted")
 	}
 }

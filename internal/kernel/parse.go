@@ -203,21 +203,21 @@ func ValidateCorpus(schema SemanticSchema, corpus Corpus) error {
 			return fmt.Errorf("indicator %d is incomplete", index)
 		}
 	}
-	cellByCase := map[string]Cell{}
-	activityByCase := map[string]MetaActivity{}
-	for _, cell := range corpus.Cells {
-		cellByCase[cell.CaseID] = cell
+	cellByCase, err := indexByCase(corpus.Cells, "cell", func(cell Cell) string { return cell.CaseID })
+	if err != nil {
+		return err
 	}
-	for _, activity := range corpus.MetaActivities {
-		activityByCase[activity.CaseID] = activity
+	activityByCase, err := indexByCase(corpus.MetaActivities, "meta activity", func(activity MetaActivity) string { return activity.CaseID })
+	if err != nil {
+		return err
 	}
-	proofByCase := map[string]ProofChoice{}
-	indicatorByCase := map[string]Indicator{}
-	for _, choice := range corpus.ProofChoices {
-		proofByCase[choice.CaseID] = choice
+	proofByCase, err := indexByCase(corpus.ProofChoices, "proof choice", func(choice ProofChoice) string { return choice.CaseID })
+	if err != nil {
+		return err
 	}
-	for _, indicator := range corpus.Indicators {
-		indicatorByCase[indicator.CaseID] = indicator
+	indicatorByCase, err := indexByCase(corpus.Indicators, "indicator", func(indicator Indicator) string { return indicator.CaseID })
+	if err != nil {
+		return err
 	}
 	for index, c := range corpus.Cases {
 		if err := addIdentity(semanticIDs, edgeIDs, "case", index, c.SemanticID, c.EdgeID); err != nil {
@@ -241,9 +241,19 @@ func ValidateCorpus(schema SemanticSchema, corpus Corpus) error {
 			return fmt.Errorf("case %s: %w", c.CaseID, err)
 		}
 	}
-	for caseID := range cellByCase {
-		if !caseIDs[caseID] {
-			return fmt.Errorf("cell %s has no case", caseID)
+	for _, indexed := range []struct {
+		name  string
+		items map[string]any
+	}{
+		{name: "cell", items: asAnyMap(cellByCase)},
+		{name: "meta activity", items: asAnyMap(activityByCase)},
+		{name: "proof choice", items: asAnyMap(proofByCase)},
+		{name: "indicator", items: asAnyMap(indicatorByCase)},
+	} {
+		for caseID := range indexed.items {
+			if !caseIDs[caseID] {
+				return fmt.Errorf("%s %s has no case", indexed.name, caseID)
+			}
 		}
 	}
 	for _, statuses := range []struct {
@@ -259,6 +269,26 @@ func ValidateCorpus(schema SemanticSchema, corpus Corpus) error {
 		}
 	}
 	return nil
+}
+
+func indexByCase[T any](items []T, kind string, caseID func(T) string) (map[string]T, error) {
+	indexed := make(map[string]T, len(items))
+	for index, item := range items {
+		id := caseID(item)
+		if _, exists := indexed[id]; exists {
+			return nil, fmt.Errorf("%s %d duplicates case %q", kind, index, id)
+		}
+		indexed[id] = item
+	}
+	return indexed, nil
+}
+
+func asAnyMap[T any](items map[string]T) map[string]any {
+	result := make(map[string]any, len(items))
+	for key, item := range items {
+		result[key] = item
+	}
+	return result
 }
 
 func addIdentity(semanticIDs, edgeIDs map[string]string, kind string, index int, semanticID, edgeID string) error {
