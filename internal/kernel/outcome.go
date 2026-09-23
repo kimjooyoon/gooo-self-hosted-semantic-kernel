@@ -72,6 +72,9 @@ func ReadOutcome(path string) (Outcome, []byte, error) {
 	if outcome.Schema != "gooo.evaluation/v1" || outcome.CaseID == "" || !statusSet[outcome.Status] || outcome.SemanticID == "" || outcome.EdgeID == "" || outcome.SemanticSchemaDigest == "" || outcome.CorpusDigest == "" || outcome.TerminalDigest == "" {
 		return Outcome{}, nil, fmt.Errorf("outcome %s has an incomplete identity or status", path)
 	}
+	if !ValidTerminalDigest(outcome) {
+		return Outcome{}, nil, fmt.Errorf("outcome %s has an invalid terminal digest", path)
+	}
 	if outcome.Status == StatusUnknown {
 		if outcome.Unknown == nil || outcome.Unknown.Validate() != nil || outcome.TypedValue != nil {
 			return Outcome{}, nil, fmt.Errorf("outcome %s UNKNOWN is not fail-closed", path)
